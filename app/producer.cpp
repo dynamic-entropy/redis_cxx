@@ -1,6 +1,7 @@
 // Executable for redis producer
 
 #include <iostream>
+#include <cpp_redis/cpp_redis>
 
 int main()
 {

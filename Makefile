@@ -4,7 +4,7 @@ BUILD_DIR = build
 clean:
 	rm -rf $(BUILD_DIR)
 
-build:
+build: app/consumer.cpp app/producer.cpp
 	cmake -S . -B $(BUILD_DIR)
 	cmake --build $(BUILD_DIR)
 
