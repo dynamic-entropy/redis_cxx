@@ -8,8 +8,8 @@ build: app/consumer.cpp app/producer.cpp
 	cmake -S . -B $(BUILD_DIR)
 	cmake --build $(BUILD_DIR)
 
-run_producer: build
+run_producer:
 	$(BUILD_DIR)/Producer 
 
-run_consumer: build
+run_consumer:
 	$(BUILD_DIR)/Consumer
