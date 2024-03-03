@@ -1,4 +1,4 @@
-### Instructions to run the demo
+## Instructions to run the demo
 
 1. Clone the repository
 - Using SSH
@@ -38,6 +38,9 @@ make run_producer
 The producer executes LPUSH command against the redis server. https://redis.io/commands/lpush/
 
 5. Run the consumer
+
+5.1 Basic Consumer
+
 ```bash
 make run_consumer
 ```
@@ -46,3 +49,13 @@ make run_consumer
 
 The consumer executes RPOP command against the redis server. https://redis.io/commands/rpop/ \
 RPOP is non-blocking and returns `nil` if the list is empty.
+
+5.2 Blocking Consumer
+
+```bash
+make run_blocking_consumer
+```
+- The consumer blocks and waits for messages to be pushed to the redis server when the list is empty.
+
+The consumer executes BRPOP command against the redis server. https://redis.io/commands/brpop/ \
+BRPOP is blocking and waits for a message to be pushed to the list.
