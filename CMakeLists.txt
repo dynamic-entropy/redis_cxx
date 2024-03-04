@@ -12,9 +12,10 @@ add_git_submodule(external/cpp_redis)
 add_executable(Producer app/producer.cpp)
 add_executable(Consumer app/consumer.cpp)
 add_executable(BlockingConsumer app/blocking_consumer.cpp)
+add_executable(ReliableConsumer app/reliable_consumer.cpp)
 
 # add a loop to for each executable
-foreach(executable Producer Consumer BlockingConsumer)
+foreach(executable Producer Consumer BlockingConsumer ReliableConsumer)
     target_link_libraries(${executable} cpp_redis)
     target_include_directories(${executable} SYSTEM PUBLIC "${CMAKE_SOURCE_DIR}/external/cpp_redis/includes")
     target_include_directories(${executable} SYSTEM PUBLIC "${CMAKE_SOURCE_DIR}/external/cpp_redis/tacopie/includes")

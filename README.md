@@ -59,3 +59,32 @@ make run_blocking_consumer
 
 The consumer executes BRPOP command against the redis server. https://redis.io/commands/brpop/ \
 BRPOP is blocking and waits for a message to be pushed to the list.
+
+
+5.3 Reliable Consumer (Reliable Queue)
+To prevent data loss, a consumer can use push to temporary queue and only acknowledge the message after processing is complete by
+removing the message from the temporary queue.
+
+```bash
+make run_reliable_consumer
+
+make run_producer
+    - Send some messages to the redis server.
+
+Press `Ctrl+C` to stop the consumer.
+   - This leaves a unaknowledged message in the temporary queue.
+
+make run_reliable_consumer
+    - Run the consumer again to see the unacknowledged message being processed again.
+```
+
+Each consumer inspects the temporary queue on startup and pushes the messages to main queue assuming these are unacknowledged messages.
+
+Limitations:
+(of the current design of the consumer)
+  - Duplication (for multiple consumers): It does not gurantee exactly once delivery if scaled beyond a single consumer; but only at least once delivery.
+        - New consumers may potentially requeue the jobs in temporary queue that are being worked on by another.
+  
+  - Poison pill: If the consumer crashes due to a bad message
+        - the message is reququed and the consumer will crash again.
+        - however since the message is pushed at the end of the queue, it will still be able to work on other messages.
