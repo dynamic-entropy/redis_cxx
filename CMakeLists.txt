@@ -2,21 +2,16 @@ cmake_minimum_required(VERSION 3.21)
 
 project(CppRedisClients VERSION 0.1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_MODULE_PATH "cmake")
-include(AddGitSubmodule)
+find_package(Boost 1.84.0 REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(Threads REQUIRED)
 
-add_git_submodule(external/cpp_redis)
 
-add_executable(Producer app/producer.cpp)
-add_executable(Consumer app/consumer.cpp)
-add_executable(BlockingConsumer app/blocking_consumer.cpp)
-add_executable(ReliableConsumer app/reliable_consumer.cpp)
+add_executable(BoostRedis app/boost_redis.cpp)
 
 # add a loop to for each executable
-foreach(executable Producer Consumer BlockingConsumer ReliableConsumer)
-    target_link_libraries(${executable} cpp_redis)
-    target_include_directories(${executable} SYSTEM PUBLIC "${CMAKE_SOURCE_DIR}/external/cpp_redis/includes")
-    target_include_directories(${executable} SYSTEM PUBLIC "${CMAKE_SOURCE_DIR}/external/cpp_redis/tacopie/includes")
+foreach(executable BoostRedis)
+target_link_libraries(${executable} OpenSSL::SSL OpenSSL::Crypto Threads::Threads)
 endforeach()
