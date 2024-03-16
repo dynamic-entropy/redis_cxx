@@ -1,7 +1,7 @@
 
-#include <boost/redis/src.hpp>
-#include <boost/redis/connection.hpp>
 #include <boost/asio/detached.hpp>
+#include <boost/redis/connection.hpp>
+#include <boost/redis/src.hpp>
 #include <iostream>
 
 namespace asio = boost::asio;
@@ -32,11 +32,14 @@ auto main(int argc, char *argv[]) -> int
 
         conn.async_run(cfg, {}, asio::detached);
 
-        conn.async_exec(req, resp, [&](auto ec, auto)
-                        {
-         if (!ec)
-            std::cout << "PING: " << std::get<0>(resp).value() << std::endl;
-         conn.cancel(); });
+        conn.async_exec(req, resp, [&](auto ec, auto) {
+            if (!ec)
+                std::cout << "PING: " << std::get<0>(resp).value() << std::endl;
+            else
+                std::cerr << "Error: Cannot connect to Redis Server " << ec.message() << std::endl;
+
+            conn.cancel();
+        });
 
         ioc.run();
     }

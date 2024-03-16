@@ -9,9 +9,10 @@ find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 
 
-add_executable(BoostRedis app/boost_redis.cpp)
+add_executable(PingRedis app/ping.cpp)
+add_executable(Producer app/producer.cpp)
 
 # add a loop to for each executable
-foreach(executable BoostRedis)
+foreach(executable PingRedis Producer)
 target_link_libraries(${executable} OpenSSL::SSL OpenSSL::Crypto Threads::Threads)
 endforeach()
