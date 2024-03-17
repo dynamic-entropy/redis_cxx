@@ -38,14 +38,28 @@ auto read_input(asio::io_context &ioc) -> asio::awaitable<std::string>
     }
 }
 
+auto auto_input(asio::io_context &ioc) -> asio::awaitable<std::string>
+{
+    asio::steady_timer timer(ioc, asio::chrono::seconds(1));
+    co_await timer.async_wait(asio::use_awaitable);
+    if (std::rand() % 2)
+    {
+        co_return "abort:" + std::to_string(std::rand());
+    }
+
+    co_return std::to_string(std::rand());
+}
+
 // Perform work on the message - wait for 2 seconds to simulate work
 // If the message starts with abort: return false (to abort) and true (to commit)
 auto perform_operation(asio::io_context &ioc, std::shared_ptr<redis::connection> conn, std::string message)
     -> asio::awaitable<void>
 {
     std::cout << "Performing operation on message: " << message << std::endl;
-    boost::asio::steady_timer timer(ioc, boost::asio::chrono::seconds(2));
-    co_await timer.async_wait(boost::asio::use_awaitable);
+
+    int timeToWait = 3;
+    asio::steady_timer timer(ioc, asio::chrono::seconds(timeToWait));
+    co_await timer.async_wait(asio::use_awaitable);
     std::cout << "Operation completed on message: " << message << std::endl;
     bool decision = true;
     if (message.starts_with("abort:"))
@@ -93,9 +107,8 @@ auto co_main(redis::config cfg, asio::io_context &ioc) -> asio::awaitable<void>
         for (;;)
         {
 
-            // Read a message from the standard input.
-            // Exit if empty message.
-            std::string message = co_await read_input(ioc);
+            // Get a message from auto_input every second
+            std::string message = co_await auto_input(ioc);
             if (message.empty())
             {
                 break;
@@ -104,6 +117,7 @@ auto co_main(redis::config cfg, asio::io_context &ioc) -> asio::awaitable<void>
             req.clear();
             req.push("LPUSH", "myqueue:pending", message);
 
+            std::cout << "PUSHING MESSAGE: " << message << std::endl;
             co_await conn->async_exec(req, resp, asio::deferred);
             std::cout << "QUEUE LENGTH: " << std::get<0>(resp).value() << std::endl;
 
@@ -125,8 +139,7 @@ int main(int argc, char *argv[])
 
         asio::io_context ioc;
 
-        std::cout << "Enter messages to push to the queue and press Enter." << std::endl;
-        std::cout << "Press Enter wihout any message to exit." << std::endl;
+        std::cout << "PRODUCER STARTED" << std::endl;
 
         // Start the main coroutine.
         // Stop the io_context when the coroutine exits.
