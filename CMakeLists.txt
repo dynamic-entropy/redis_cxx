@@ -12,8 +12,9 @@ find_package(Threads REQUIRED)
 add_executable(PingRedis app/ping.cpp)
 add_executable(Producer app/producer.cpp)
 add_executable(Consumer app/consumer.cpp)
+add_executable(2PC_Producer app/2pc_producer.cpp)
 
 # add a loop to for each executable
-foreach(executable PingRedis Producer Consumer)
+foreach(executable PingRedis Producer Consumer 2PC_Producer)
 target_link_libraries(${executable} OpenSSL::SSL OpenSSL::Crypto Threads::Threads)
 endforeach()
