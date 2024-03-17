@@ -4,7 +4,7 @@ BUILD_DIR = build
 clean:
 	rm -rf $(BUILD_DIR)
 
-build: app/ping.cpp app/producer.cpp app/consumer.cpp app/2pc_producer.cpp
+build: app/ping.cpp app/producer.cpp app/consumer.cpp app/2pc_producer.cpp app/2pc_consumer.cpp
 	cmake -S . -B $(BUILD_DIR)
 	cmake --build $(BUILD_DIR)
 
@@ -19,4 +19,7 @@ run_consumer:
 
 run_2pc_producer:
 	$(BUILD_DIR)/2PC_Producer
+
+run_2pc_consumer:
+	$(BUILD_DIR)/2PC_Consumer
 
